@@ -23,20 +23,37 @@ Employee.validates :hourly_rate, numericality: {greater_than: 39,  less_than: 20
 
 
 # Stores must always have a name that is a minimum of 3 characters
-Store.validates :name, length: {minimum: 3 }
+Store.validates :name, length: { minimum: 3 }
 # Stores have an annual_revenue that is a number (integer) that must be 0 or more
 Store.validates :annual_revenue, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 # BONUS: Stores must carry at least one of the men's or women's apparel (hint: use a custom validation method - don't use a Validator class)
 
+# def carry_apparel
+#   if mens_apparel.blank? ||  womens_apparel.blank?
+#       errors.add(:apperal, "must include at least mens or womens apparel (true)")
+#   end
+# end
+
+
+def carry_apparel
+  if mens_apparel.blank? 
+    if womens_apparel.blank?
+      errors.add(:apperal, "must include at least mens or womens apparel (true)")
+    end
+  end
+end
+
+# || !womens_apparel.present?
+Store.validate :carry_apparel
 
 # User Inputs Store name
 puts 'Input a store name:'
 @test_store = gets.chomp
 
 # Make above Store with name only
-store = Store.create(name: @test_store)
+store = Store.create(name: @test_store, womens_apparel: true)
 
-#Display Error(s)
+# Display Error(s)
 store.errors.messages.each do |key, msg|
   puts "Error: #{key} > #{msg}"
 end
