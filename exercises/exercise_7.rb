@@ -22,10 +22,13 @@ Employee.validates :hourly_rate, numericality: {greater_than: 39,  less_than: 20
 # puts test
 
 
+
 # Stores must always have a name that is a minimum of 3 characters
 Store.validates :name, length: { minimum: 3 }
 # Stores have an annual_revenue that is a number (integer) that must be 0 or more
 Store.validates :annual_revenue, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+
 # BONUS: Stores must carry at least one of the men's or women's apparel (hint: use a custom validation method - don't use a Validator class)
 
 # def carry_apparel
@@ -34,6 +37,13 @@ Store.validates :annual_revenue, numericality: { only_integer: true, greater_tha
 #   end
 # end
 
+def carry_apparel_test
+    if mens_apparel.present? || womens_apparel.present?
+        errors.add(:apperal, "one of them is present")
+    end
+  end
+  Store.validate :carry_apparel_test
+# !!! Above blank? doesn't work at all but if nested works against logic && about present test works with OR... Why?
 
 def carry_apparel
   if mens_apparel.blank? 
@@ -42,8 +52,6 @@ def carry_apparel
     end
   end
 end
-
-# || !womens_apparel.present?
 Store.validate :carry_apparel
 
 # User Inputs Store name
@@ -51,7 +59,7 @@ puts 'Input a store name:'
 @test_store = gets.chomp
 
 # Make above Store with name only
-store = Store.create(name: @test_store, womens_apparel: true)
+store = Store.create(name: @test_store, womens_apparel: false)
 
 # Display Error(s)
 store.errors.messages.each do |key, msg|
